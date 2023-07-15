@@ -16,16 +16,23 @@ class GenesisView(binaryview.BinaryView):
 
     @classmethod
     def is_valid_for_data(self, data):
+
         console_name = data[0x100:0x110].decode('utf-8')
-        if 'SEGA' not in console_name.upper():
+        if ('SEGA MEGA DRIVE' not in console_name.upper()) and ('SEGA GENESIS' not in console_name.upper()):
+            # print("No magic SEGA word found in data")
             return False
 
         rom_start = struct.unpack('>I', data[0x1a0:0x1a4])[0]
         if rom_start != 0:
+            # print("rom_start is invalid for Genesis")
             return False
 
-        ram_start = struct.unpack('>I', data[0x1a8:0x1ac])[0]
-        if ram_start != 0xff0000:
+        # Previous versions looked at rom_start address (0x1a0).  Didn't work for the first Genesis
+        # ROM I tried (Michael Jackson's Moonwalker).  So I've removed that check...
+
+        software_type = data[0x180:0x182].decode('utf-8')
+        if (software_type != "GM"):
+            # print("Software type not GM for Genesis Game")
             return False
 
         return True
