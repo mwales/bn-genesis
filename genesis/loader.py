@@ -56,7 +56,25 @@ class GenesisView(binaryview.BinaryView):
 
         # Z80 Segment
         self.add_auto_segment(
-            0xa00000, 0x1ffff, 0, 0,
+            0xa00000, 0xffff, 0, 0,
+            SegmentFlag.SegmentReadable | SegmentFlag.SegmentWritable
+        )
+
+        # System IO
+        self.add_auto_segment(
+            0xa10000, 0xfff, 0, 0,
+            SegmentFlag.SegmentReadable | SegmentFlag.SegmentWritable
+        )
+
+        # IO Control
+        self.add_auto_segment(
+            0xa11000, 0xffff, 0, 0,
+            SegmentFlag.SegmentReadable | SegmentFlag.SegmentWritable
+        )
+ 
+        # Copy-protection register Segment
+        self.add_auto_segment(
+            0xa14000, 0x10, 0, 0,
             SegmentFlag.SegmentReadable | SegmentFlag.SegmentWritable
         )
 
@@ -65,6 +83,7 @@ class GenesisView(binaryview.BinaryView):
             0xc00000, 0x20, 0, 0,
             SegmentFlag.SegmentReadable | SegmentFlag.SegmentWritable
         )
+
 
     def create_sections(self):
         self.add_auto_section(
@@ -83,7 +102,13 @@ class GenesisView(binaryview.BinaryView):
             "ram", 0xff0000, 0xffff,
             SectionSemantics.ReadWriteDataSectionSemantics)
         self.add_auto_section(
-            "z80", 0xa00000, 0x1ffff,
+            "z80", 0xa00000, 0xffff,
+            SectionSemantics.ReadWriteDataSectionSemantics)
+        self.add_auto_section(
+            "sys_io", 0xa10000, 0xfff,
+            SectionSemantics.ReadWriteDataSectionSemantics)
+        self.add_auto_section(
+            "io_control", 0xa11000, 0xfff,
             SectionSemantics.ReadWriteDataSectionSemantics)
         self.add_auto_section(
             "vdp", 0xc00000, 0x20,
@@ -198,6 +223,45 @@ class GenesisView(binaryview.BinaryView):
         self.create_datatype_and_name(432, 'SramInfo', char12)
         self.create_datatype_and_name(444, 'Notes', char52)
         self.create_datatype_and_name(496, 'Region', char16)
+        
+        # IO registers
+        self.create_datatype_and_name(0xa10000, 'VersionRegister', uint16)
+        self.create_datatype_and_name(0xa10002, 'Controller1Data', uint16)
+        self.create_datatype_and_name(0xa10004, 'Controller2Data', uint16)
+        self.create_datatype_and_name(0xa10006, 'ExpansionPortData', uint16)
+        self.create_datatype_and_name(0xa10008, 'Controller1Control', uint16)
+        self.create_datatype_and_name(0xa1000a, 'Controller2Control', uint16)
+        self.create_datatype_and_name(0xa1000c, 'ExpansionPortControl', uint16)
+        self.create_datatype_and_name(0xa1000e, 'Controller1SerialTx', uint16)
+        self.create_datatype_and_name(0xa10010, 'Controller1SerialRx', uint16)
+        self.create_datatype_and_name(0xa10012, 'Controller1SerialControl', uint16)
+        self.create_datatype_and_name(0xa10014, 'Controller2SerialTx', uint16)
+        self.create_datatype_and_name(0xa10016, 'Controller2SerialRx', uint16)
+        self.create_datatype_and_name(0xa10018, 'Controller2SerialControl', uint16)
+        self.create_datatype_and_name(0xa1001a, 'ExpansionPortSerialTx', uint16)
+        self.create_datatype_and_name(0xa1001c, 'ExpansionPortSerialRx', uint16)
+        self.create_datatype_and_name(0xa1001e, 'ExpansionPortSerialControl', uint16)
+
+        self.create_datatype_and_name(0xa11000, 'MemoryModeRegister', uint16)
+        self.create_datatype_and_name(0xa11100, 'Z80BusRequest', uint16)
+        self.create_datatype_and_name(0xa11200, 'Z80Reset', uint16)
+        self.create_datatype_and_name(0xa14000, 'TMSS', uint16)
+        
+        # VDP registers
+        self.create_datatype_and_name(0xc00000, 'VdpData', uint16)
+        self.create_datatype_and_name(0xc00002, 'VdpDataMirror', uint16)
+        self.create_datatype_and_name(0xc00004, 'VdpControl', uint16)
+        self.create_datatype_and_name(0xc00006, 'VdpControlMirror', uint16)
+        self.create_datatype_and_name(0xc00008, 'VdpHvCounter0', uint16)
+        self.create_datatype_and_name(0xc0000a, 'VdpHvCounter1', uint16)
+        self.create_datatype_and_name(0xc0000c, 'VdpHvCounter2', uint16)
+        self.create_datatype_and_name(0xc0000e, 'VdpHvCounter3', uint16)
+        self.create_datatype_and_name(0xc00011, 'VdpPsg0', uint16)
+        self.create_datatype_and_name(0xc00013, 'VdpPsg1', uint16)
+        self.create_datatype_and_name(0xc00015, 'VdpPsg2', uint16)
+        self.create_datatype_and_name(0xc00017, 'VdpPsg3', uint16)
+        self.create_datatype_and_name(0xc0001c, 'VdpDebugReg', uint16)
+        self.create_datatype_and_name(0xc0001e, 'VdpDebugRegMirror', uint16)
 
     def create_header(self):
         uint32 = self.parse_type_string("uint32_t")[0]
