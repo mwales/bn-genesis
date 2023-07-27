@@ -1,5 +1,6 @@
 from binaryninja import PluginCommand
-from .genesis import GenesisChecksum, GenesisAssemble, GenesisCallTableEnum
+from binaryninja import ChoiceField
+from .genesis import GenesisChecksum, GenesisAssemble, GenesisCallTableEnum, VdpAnalysis
 
 
 def checksum(view):
@@ -16,6 +17,9 @@ def call_table_enum(view):
     cte = GenesisCallTableEnum(view)
     cte.start()
 
+def comment_vdp_instructions(view, mlif):
+    va = VdpAnalysis(view)
+    va.comment_vdp_instructions(mlif)
 
 PluginCommand.register(
     'genesis: fixup ROM checksum',
@@ -33,3 +37,10 @@ PluginCommand.register(
     'Locate and disassemble call tables',
     call_table_enum
 )
+
+PluginCommand.register_for_medium_level_il_function(
+    'genesis: comment VDP inst for current function',
+    'Iterate through selected function and comment VDP access instructions',
+    comment_vdp_instructions
+)
+
