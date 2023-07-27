@@ -15,6 +15,10 @@ Suite of Binary Ninja plugins that assist with SEGA Genesis ROM hacking
 
 ![demo bn-genesis](screencap.gif)
 
+* Provides simple readable comments about VDP registers writes
+
+![vdp comment example](vdp_analysis.png)
+
 ## Dependencies
 
 * Assembler plugin requires `gcc-m68k-linux-gnu` (Ubuntu or Debian)
@@ -51,3 +55,8 @@ and you should have additional segments and sections that are specific to the Ge
   but very thorough and complete.
 * [MegaDrive Wiki](https://md.railgun.works/index.php?title=Main_Page): Lots
   of info here, nice concise [VDP Reference](https://md.railgun.works/index.php?title=VDP).
+
+  ## Future Features / Todo List
+
+  - [ ] When all 2/3 VDP DMA registers get set at once, provide a single clickable address
+  - [ ] Other VDP accesses other than simple register writes
